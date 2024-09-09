@@ -1,36 +1,65 @@
 package jogo;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
-import java.util.Random;
 import javax.swing.*;
 import tela.TamanhoTela;
 
-public class FlappyBird extends JPanel implements ActionListener{
-  //Imagens do jogo
+public class FlappyBird extends JPanel implements ActionListener {
+  // Imagens do jogo
   Image fundoTela;
   Image flappyBird;
-  Image canoSuperior;
-  Image canoInferior;
+  Image canoSuperiorImg;
+  Image canoInferiorImg;
 
-  //Logica do jogo
-  Passaro passaro;
+  ArrayList<Cano> canos;
+
+  public GameOver gameOver = new GameOver();
+
   Timer gameLoop;
+  Timer colocarCanosTimer;
+
+  double pontuacao = 0;
 
   FlappyBird() {
     setPreferredSize(new Dimension(TamanhoTela.getCOMPRIMENTO(), TamanhoTela.getALTURA()));
-    //Carregando as texturas do jogo
+    setFocusable(true);
+
+    // Carregando as texturas do jogo
     fundoTela = new ImageIcon(getClass().getResource("/graficos/flappybirdbg.png")).getImage();
     flappyBird = new ImageIcon(getClass().getResource("/graficos/flappybird.png")).getImage();
-    canoSuperior = new ImageIcon(getClass().getResource("/graficos/toppipe.png")).getImage();
-    canoInferior = new ImageIcon(getClass().getResource("/graficos/bottompipe.png")).getImage();
+    canoSuperiorImg = new ImageIcon(getClass().getResource("/graficos/toppipe.png")).getImage();
+    canoInferiorImg = new ImageIcon(getClass().getResource("/graficos/bottompipe.png")).getImage();
 
-    //Criando um novo passaro
-    passaro = new Passaro(flappyBird);
+    // Criando um novo passaro
+    addKeyListener(Passaro.getPassaro());
 
-    //Criando um loop de jogo
-    gameLoop = new Timer(1000/60, this);
+    // Tempo de aparecimento dos canos
+    canos = new ArrayList<Cano>();
+    colocarCanosTimer = new Timer(1500, new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        colocarCanos();
+      }
+    });
+
+    // Criando um loop de jogo
+    gameLoop = new Timer(1000 / 60, this);
     gameLoop.start();
+    colocarCanosTimer.start();
+  }
+
+  public void colocarCanos() {
+    int abertura = TamanhoTela.getALTURA() / 4;
+
+    Cano canoSuperior = new Cano(canoSuperiorImg);
+    canoSuperior.setY(canoSuperior.canoAleatorioY());
+    canos.add(canoSuperior);
+
+    Cano canoInferior = new Cano(canoInferiorImg);
+    canoInferior.setY(canoSuperior.getY() + canoInferior.getAltura() + abertura);
+    canos.add(canoInferior);
   }
 
   @Override
@@ -39,20 +68,65 @@ public class FlappyBird extends JPanel implements ActionListener{
     desenhar(g);
   }
 
-  public void desenhar(Graphics g) {  
-    //Fundo da tela
+  public void desenhar(Graphics g) {
+    // Fundo da tela
     g.drawImage(fundoTela, 0, 0, TamanhoTela.getCOMPRIMENTO(), TamanhoTela.getALTURA(), null);
 
-    //Desenhando o passaro na tela
-    g.drawImage(passaro.getImg(), passaro.getX(), passaro.getY(), passaro.getComprimento(), passaro.getAltura(), null);
+    // Desenhando o passaro na tela
+    g.drawImage(Passaro.getPassaro().getImg(), Passaro.getPassaro().getX(), Passaro.getPassaro().getY(), Passaro.getPassaro().getComprimento(), Passaro.getPassaro().getAltura(), null);
+
+    // Desenhando os canos na tela
+    for (int i = 0; i < canos.size(); i++) {
+      Cano cano = canos.get(i);
+      g.drawImage(cano.getImg(), cano.getX(), cano.getY(), cano.getComprimento(), cano.getAltura(), null);
+    }
+
+    // Desenhando a pontuação na tela
+    g.setColor(Color.white);
+    g.setFont(new Font("Arial", Font.PLAIN, 32));
+    if (gameOver.isGameOver()) {
+      g.drawString("Fim de Jogo: " + String.valueOf((int) pontuacao), 10, 35);
+    } else {
+      g.drawString(String.valueOf((int) pontuacao), 10, 35);
+    }
+  }
+
+  public void movimento() {
+    for (int i = 0; i < canos.size(); i++) {
+      Cano cano = canos.get(i);
+      cano.movimentarHorizontal();
+
+      if (!cano.getPassou() && Passaro.getPassaro().getX() > cano.getX() + cano.getComprimento()) {
+        cano.isPassou(true);
+        pontuacao += 0.5;
+
+      }
+
+      if (colisao(Passaro.getPassaro(), cano)) {
+        gameOver.setGameOver(true);
+      }
+
+      if (Passaro.getPassaro().getY() > TamanhoTela.getALTURA()) {
+        gameOver.setGameOver(true);
+      }
+    }
+  }
+
+  public boolean colisao(Passaro a, Cano b) {
+    return a.getX() < b.getX() + b.getComprimento() &&
+        a.getX() + a.getComprimento() > b.getX() &&
+        a.getY() < b.getY() + b.getAltura() &&
+        a.getY() + a.getAltura() > b.getY();
   }
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    passaro.movimento();
+    Passaro.getPassaro().movimento();
+    movimento();
     repaint();
+    if (gameOver.isGameOver()) {
+      colocarCanosTimer.stop();
+      gameLoop.stop();
+    }
   }
-
 }
-
-  

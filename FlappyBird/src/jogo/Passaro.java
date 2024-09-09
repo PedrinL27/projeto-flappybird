@@ -2,20 +2,33 @@ package jogo;
 
 import tela.TamanhoTela;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
-public class Passaro {
+import javax.swing.ImageIcon;
+
+public class Passaro implements KeyListener {
+  private static Passaro instancia;
   private int x;
   private int y;
   private int comprimento;
   private int altura;
   private Image img;
-  private int velocidadeY = -6;
+  private int velocidadeY;
   private int gravidade = 1;
-  
-  Passaro(Image img) {
-    this.img = img;
-    x = TamanhoTela.getCOMPRIMENTO()/8;
-    y = TamanhoTela.getALTURA()/2;
+
+  public static Passaro getPassaro() {
+    if (instancia == null) {
+      return instancia = new Passaro();
+    } else {
+      return instancia;
+    }
+  }
+
+  Passaro() {
+    img = new ImageIcon(getClass().getResource("/graficos/flappybird.png")).getImage();
+    x = TamanhoTela.getCOMPRIMENTO() / 8;
+    y = TamanhoTela.getALTURA() / 2;
     comprimento = 34;
     altura = 24;
   }
@@ -30,6 +43,9 @@ public class Passaro {
     return x;
   }
 
+  public void setY(int y) {
+    this.y = y;
+  }
   public int getY() {
     return y;
   }
@@ -44,5 +60,20 @@ public class Passaro {
 
   public Image getImg() {
     return img;
+  }
+
+  @Override
+  public void keyPressed(KeyEvent e) {
+    if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+      velocidadeY = -9;
+    }
+  }
+
+  @Override
+  public void keyReleased(KeyEvent e) {
+  }
+
+  @Override
+  public void keyTyped(KeyEvent e) {
   }
 }
