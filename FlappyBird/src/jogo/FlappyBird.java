@@ -2,25 +2,28 @@ package jogo;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
 import javax.swing.*;
 import tela.TamanhoTela;
 
 public class FlappyBird extends JPanel implements ActionListener {
+  private static FlappyBird instancia;
   // Imagens do jogo
   Image fundoTela;
   Image flappyBird;
   Image canoSuperiorImg;
   Image canoInferiorImg;
 
-  ArrayList<Cano> canos;
-
-  public GameOver gameOver = new GameOver();
-
   Timer gameLoop;
   Timer colocarCanosTimer;
 
   double pontuacao = 0;
+
+  public static FlappyBird getInstancia() {
+    if (instancia == null) {
+      instancia = new FlappyBird();
+    }
+    return instancia;
+  }
 
   FlappyBird() {
     setPreferredSize(new Dimension(TamanhoTela.getCOMPRIMENTO(), TamanhoTela.getALTURA()));
@@ -36,7 +39,6 @@ public class FlappyBird extends JPanel implements ActionListener {
     addKeyListener(Passaro.getPassaro());
 
     // Tempo de aparecimento dos canos
-    canos = new ArrayList<Cano>();
     colocarCanosTimer = new Timer(1500, new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -55,11 +57,11 @@ public class FlappyBird extends JPanel implements ActionListener {
 
     Cano canoSuperior = new Cano(canoSuperiorImg);
     canoSuperior.setY(canoSuperior.canoAleatorioY());
-    canos.add(canoSuperior);
+    Cano.getInstacia().add(canoSuperior);
 
     Cano canoInferior = new Cano(canoInferiorImg);
     canoInferior.setY(canoSuperior.getY() + canoInferior.getAltura() + abertura);
-    canos.add(canoInferior);
+    Cano.getInstacia().add(canoInferior);
   }
 
   @Override
@@ -73,18 +75,19 @@ public class FlappyBird extends JPanel implements ActionListener {
     g.drawImage(fundoTela, 0, 0, TamanhoTela.getCOMPRIMENTO(), TamanhoTela.getALTURA(), null);
 
     // Desenhando o passaro na tela
-    g.drawImage(Passaro.getPassaro().getImg(), Passaro.getPassaro().getX(), Passaro.getPassaro().getY(), Passaro.getPassaro().getComprimento(), Passaro.getPassaro().getAltura(), null);
+    g.drawImage(Passaro.getPassaro().getImg(), Passaro.getPassaro().getX(), Passaro.getPassaro().getY(),
+        Passaro.getPassaro().getComprimento(), Passaro.getPassaro().getAltura(), null);
 
     // Desenhando os canos na tela
-    for (int i = 0; i < canos.size(); i++) {
-      Cano cano = canos.get(i);
+    for (int i = 0; i < Cano.getInstacia().size(); i++) {
+      Cano cano = Cano.getInstacia().get(i);
       g.drawImage(cano.getImg(), cano.getX(), cano.getY(), cano.getComprimento(), cano.getAltura(), null);
     }
 
     // Desenhando a pontuação na tela
     g.setColor(Color.white);
     g.setFont(new Font("Arial", Font.PLAIN, 32));
-    if (gameOver.isGameOver()) {
+    if (GameOver.getInstancia().isGameOver()) {
       g.drawString("Fim de Jogo: " + String.valueOf((int) pontuacao), 10, 35);
     } else {
       g.drawString(String.valueOf((int) pontuacao), 10, 35);
@@ -92,8 +95,8 @@ public class FlappyBird extends JPanel implements ActionListener {
   }
 
   public void movimento() {
-    for (int i = 0; i < canos.size(); i++) {
-      Cano cano = canos.get(i);
+    for (int i = 0; i < Cano.getInstacia().size(); i++) {
+      Cano cano = Cano.getInstacia().get(i);
       cano.movimentarHorizontal();
 
       if (!cano.getPassou() && Passaro.getPassaro().getX() > cano.getX() + cano.getComprimento()) {
@@ -103,11 +106,11 @@ public class FlappyBird extends JPanel implements ActionListener {
       }
 
       if (colisao(Passaro.getPassaro(), cano)) {
-        gameOver.setGameOver(true);
+        GameOver.getInstancia().setGameOver(true);
       }
 
       if (Passaro.getPassaro().getY() > TamanhoTela.getALTURA()) {
-        gameOver.setGameOver(true);
+        GameOver.getInstancia().setGameOver(true);
       }
     }
   }
@@ -124,7 +127,7 @@ public class FlappyBird extends JPanel implements ActionListener {
     Passaro.getPassaro().movimento();
     movimento();
     repaint();
-    if (gameOver.isGameOver()) {
+    if (GameOver.getInstancia().isGameOver()) {
       colocarCanosTimer.stop();
       gameLoop.stop();
     }

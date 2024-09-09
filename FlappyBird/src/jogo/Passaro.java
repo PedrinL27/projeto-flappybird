@@ -15,14 +15,13 @@ public class Passaro implements KeyListener {
   private int altura;
   private Image img;
   private int velocidadeY;
-  private int gravidade = 1;
+  private double gravidade = 1;
 
   public static Passaro getPassaro() {
     if (instancia == null) {
-      return instancia = new Passaro();
-    } else {
-      return instancia;
+      instancia = new Passaro();
     }
+    return instancia;
   }
 
   Passaro() {
@@ -46,6 +45,7 @@ public class Passaro implements KeyListener {
   public void setY(int y) {
     this.y = y;
   }
+
   public int getY() {
     return y;
   }
@@ -62,11 +62,18 @@ public class Passaro implements KeyListener {
     return img;
   }
 
+  public void setVelocidadeY(int velocidadeY) {
+    this.velocidadeY = velocidadeY;
+  }
+
   @Override
   public void keyPressed(KeyEvent e) {
     if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-      velocidadeY = -9;
+      velocidadeY = -10;
+      if (GameOver.getInstancia().isGameOver())
+        GameOver.getInstancia().resetarJogo();
     }
+
   }
 
   @Override

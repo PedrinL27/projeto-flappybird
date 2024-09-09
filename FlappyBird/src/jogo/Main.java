@@ -12,10 +12,9 @@ public class Main {
     tela.setResizable(false);
     tela.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-    FlappyBird flappyBird = new FlappyBird();
-    tela.add(flappyBird);
+    tela.add(FlappyBird.getInstancia());
     tela.pack();
-    flappyBird.requestFocus();
+    FlappyBird.getInstancia().requestFocus();
     tela.setVisible(true);
   }
 }

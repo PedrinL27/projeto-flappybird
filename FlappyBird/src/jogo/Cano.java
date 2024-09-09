@@ -1,11 +1,12 @@
 package jogo;
 
 import java.awt.*;
-import java.util.Random;
+import java.util.ArrayList;
 
 import tela.TamanhoTela;
 
 public class Cano {
+  private static ArrayList<Cano> instancia;
   private int x;
   private int y;
   private int comprimento;
@@ -13,7 +14,13 @@ public class Cano {
   private Image img;
   private boolean passou;
   private int velocidadeX = -4;
-  private Random random = new Random();
+
+  public static ArrayList<Cano> getInstacia() {
+    if (instancia==null) {
+      instancia = new ArrayList<>();
+    }
+    return instancia;
+  }
 
   Cano(Image img) {
     this.img = img;
@@ -29,8 +36,7 @@ public class Cano {
   }
 
   public int canoAleatorioY() {
-    int aleatorio;
-    return aleatorio = (int) (y - altura / 4 - Math.random() * (altura / 2));
+    return (int) (y - altura / 4 - Math.random() * (altura / 2));
   }
 
   public int getX() {
