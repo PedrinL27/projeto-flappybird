@@ -67,6 +67,9 @@ public class Passaro implements KeyListener {
   public void setVelocidadeY(int velocidadeY) {
     this.velocidadeY = velocidadeY;
   }
+  public int getVelocidadeY() {
+    return velocidadeY;
+  }
 
   @Override
   public void keyPressed(KeyEvent e) {

@@ -35,7 +35,7 @@ public class FlappyBird extends JPanel implements ActionListener {
   FlappyBird() {
     setPreferredSize(new Dimension(TamanhoTela.getCOMPRIMENTO(), TamanhoTela.getALTURA()));
     setFocusable(true);
-
+    somPulo.tocarAudio("sons/flappy.wav");
     // Carregando as texturas do jogo
     fundoTela = new ImageIcon(getClass().getResource("/graficos/flappybirdbg.png")).getImage();
     flappyBird = new ImageIcon(getClass().getResource("/graficos/flappybird.png")).getImage();
@@ -135,6 +135,9 @@ public class FlappyBird extends JPanel implements ActionListener {
     Passaro.getPassaro().movimento();
     movimento();
     repaint();
+    if (Passaro.getPassaro().getVelocidadeY() == -10) {
+      somPulo.tocarAudio("sons/flappy.wav");
+    }
     if (GameOver.getInstancia().isGameOver()) {
       colocarCanosTimer.stop();
       gameLoop.stop();
