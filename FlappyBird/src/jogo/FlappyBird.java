@@ -3,6 +3,8 @@ package jogo;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+
+import sons.TocarAudios;
 import tela.TamanhoTela;
 
 public class FlappyBird extends JPanel implements ActionListener {
@@ -15,6 +17,11 @@ public class FlappyBird extends JPanel implements ActionListener {
 
   Timer gameLoop;
   Timer colocarCanosTimer;
+
+  // Sons
+  TocarAudios somPulo = new TocarAudios();
+  private TocarAudios somColisao;
+  private TocarAudios somPontuacao;
 
   double pontuacao = 0;
 
@@ -34,6 +41,7 @@ public class FlappyBird extends JPanel implements ActionListener {
     flappyBird = new ImageIcon(getClass().getResource("/graficos/flappybird.png")).getImage();
     canoSuperiorImg = new ImageIcon(getClass().getResource("/graficos/toppipe.png")).getImage();
     canoInferiorImg = new ImageIcon(getClass().getResource("/graficos/bottompipe.png")).getImage();
+
 
     // Criando um novo passaro
     addKeyListener(Passaro.getPassaro());

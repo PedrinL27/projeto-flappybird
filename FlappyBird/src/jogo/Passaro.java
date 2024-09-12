@@ -7,6 +7,8 @@ import java.awt.event.KeyListener;
 
 import javax.swing.ImageIcon;
 
+import sons.TocarAudios;
+
 public class Passaro implements KeyListener {
   private static Passaro instancia;
   private int x;
@@ -70,6 +72,7 @@ public class Passaro implements KeyListener {
   public void keyPressed(KeyEvent e) {
     if (e.getKeyCode() == KeyEvent.VK_SPACE) {
       velocidadeY = -10;
+      FlappyBird.getInstancia().somPulo.tocarAudio("sons/flappy.wav");             
       if (GameOver.getInstancia().isGameOver())
         GameOver.getInstancia().resetarJogo();
     }
